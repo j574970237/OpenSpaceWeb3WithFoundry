@@ -14,15 +14,22 @@ import "../../W1/D5/TokenBank.sol";
 contract TokenBankV2 is TokenBank {
    
     BaseERC20 public token;
+    event TokensReceived(
+        address indexed token,
+        address indexed from,
+        uint256 value,
+        bytes data
+    );
 
     constructor(BaseERC20 _token) {
         token = _token;
     }
 
-    function tokensReceived(address from, uint256 amount) external returns (bool) {
+    function tokensReceived(address from, uint256 amount, bytes calldata data) external returns (bool) {
         // 调用限制
         require(msg.sender == address(token), "Only token contract can call this function");
         balances[msg.sender][from] += amount;
+        emit TokensReceived(address(token), from, amount, data);
         return true;
     }
 
