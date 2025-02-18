@@ -364,7 +364,7 @@ contract BaseERC721 {
         uint256 tokenId,
         bytes memory _data
     ) private returns (bool) {
-        if (to.isContract()) {
+        if (isContract(to)) {
             try
                 IERC721Receiver(to).onERC721Received(
                     msg.sender,
@@ -388,6 +388,12 @@ contract BaseERC721 {
         } else {
             return true;
         }
+    }
+
+    function isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly { size := extcodesize(account) }
+        return size > 0;
     }
 }
 
