@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 contract MyERC721 is ERC721URIStorage {
-    uint256 public _counter;
+    uint256 private _counter;
     
     constructor() ERC721(unicode"祭杰的NFT", "JJNFT") {}
     

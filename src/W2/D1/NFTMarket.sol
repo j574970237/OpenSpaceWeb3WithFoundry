@@ -56,6 +56,8 @@ contract NFTMarket is ITokenReceiver {
 
     // 实现 ERC20 扩展 Token 所要求的接收者方法 tokensReceived
     function tokensReceived(address from, uint256 amount) external returns (bool) {
+        // 调用限制
+        require(msg.sender == address(token), "Only token contract can call this function");
         balances[address(token)][from] += amount;
         return true;
     }
