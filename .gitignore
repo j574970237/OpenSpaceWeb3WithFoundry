@@ -15,3 +15,6 @@ docs/
 
 # Mac
 **/.DS_Store
+
+# 暂时不启用ci
+.github/
