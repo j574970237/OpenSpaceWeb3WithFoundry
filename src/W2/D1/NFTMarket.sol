@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./BaseERC20WithCallBack.sol";
 import "./MyERC721.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 /**
  * 题目：
  * 编写一个简单的 NFTMarket 合约，使用自己发行的ERC20 扩展 Token 来买卖 NFT，NFTMarket 的函数有：
@@ -53,26 +54,28 @@ contract NFTMarket is ITokenReceiver {
 
         // 更新状态前进行所有检查
         require(token.balanceOf(msg.sender) >= listing.price, "Insufficient token balance");
-        // 添加授权检查
-        require(token.allowance(msg.sender, address(this)) >= listing.price, "Insufficient token allowance");
-
+        
         // 转移 NFT 给买家
         transferNFT(msg.sender, tokenId);
         // 转移代币给卖家
-        token.transferFrom(msg.sender, listing.seller, listing.price);
+        uint256 sellerBalance = token.balanceOf(listing.seller);
+        SafeERC20.safeTransferFrom(IERC20(token), msg.sender, listing.seller, listing.price);
+        // 检查代币转移是否成功，不能盲目相信第三方合约的方法
+        require(IERC20(token).balanceOf(listing.seller) == sellerBalance + listing.price, "Transfer token failed");
 
         emit NFTSold(tokenId, listing.seller, msg.sender, listing.price);
     }
 
     // 转移 NFT 给买家
     function transferNFT(address to, uint256 tokenId) internal {
+        // 代码顺序： 数据校验 -> 数据更新 -> 数据处理（调用第三方合约）
         require(listings[tokenId].isActive, "NFT is not listed for sale");
-
         address owner = listings[tokenId].seller;
-        nft.safeTransferFrom(owner, to, tokenId);
-        
         // 清除上架信息
         delete listings[tokenId];
+
+        nft.safeTransferFrom(owner, to, tokenId);
+        
     }
 
     // 实现 ERC20 扩展 Token 的 tokensReceived 回调函数
@@ -85,8 +88,10 @@ contract NFTMarket is ITokenReceiver {
         Listing memory listing = listings[tokenId];
         require(amount == listing.price, "Incorrect payment amount");
 
+        uint256 sellerBalance = token.balanceOf(listing.seller);
         // 转移代币给卖家
-        token.transfer(listing.seller, amount);
+        SafeERC20.safeTransfer(IERC20(token), listing.seller, amount);
+        require(token.balanceOf(listing.seller) == sellerBalance + amount, "Transfer token failed");
 
         // 转移 NFT 给买家
         transferNFT(from, tokenId);
