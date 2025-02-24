@@ -1,0 +1,16 @@
+{
+	"name": "viem-wallet",
+	"version": "1.0.0",
+	"description": "使用 Viem.sh 创建钱包",
+	"main": "cli_wallet.ts",
+	"type": "module",
+	"scripts": {
+		"start": "tsx ./cli_wallet.ts"
+	},
+	"dependencies": {
+		"viem": "^2.23.5"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.3"
+	}
+}
