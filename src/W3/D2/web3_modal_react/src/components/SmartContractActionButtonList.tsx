@@ -3,7 +3,7 @@
 //
 
 import { useAppKitNetwork, useAppKitAccount  } from '@reown/appkit/react'
-import { useReadContract, useWriteContract } from 'wagmi'
+import { useReadContract, useWriteContract, useAccount } from 'wagmi'
 import { useEffect } from 'react'
 import { sepolia } from 'viem/chains'
 const storageABI = [
@@ -141,11 +141,13 @@ export const SmartContractActionButtonList = ({ sendTokenBankBalance }: SmartCon
         })
     }
 
+    const account = useAccount();
+
     const readBankContract = useReadContract({
       address: tokenBankAddress,
       abi: tokenBankABI,
       functionName: 'balances',
-      args: ['0x64b23AE10A865DeA44AcbF8C7cD3DD1bBD686900','0x4A632004De4Ab436F392cabd2f4611651b40e795'],
+      args: ['0x64b23AE10A865DeA44AcbF8C7cD3DD1bBD686900', account.address],
       chainId: sepolia.id,
       query: {
         enabled: false, // disable the query in onload
