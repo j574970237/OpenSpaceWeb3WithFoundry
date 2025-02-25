@@ -10,9 +10,9 @@ if (!projectId) {
 }
 
 export const metadata = {
-    name: 'AppKit',
-    description: 'AppKit Example',
-    url: 'https://reown.com', // origin must match your domain & subdomain
+    name: 'OpenBank',
+    description: 'Welcome To OpenBank',
+    url: 'https://web3modalreact-lovat.vercel.app', // origin must match your domain & subdomain
     icons: ['https://avatars.githubusercontent.com/u/179229932']
   }
 
