@@ -50,7 +50,7 @@ export const ActionButtonList = ({ sendHash, sendSignMsg, sendBalance }: ActionB
 
     // function to sing a msg 
     const handleSignMsg = async () => {
-      const msg = "Hello Reown AppKit!" // message to sign
+      const msg = "Welcome To OpenBank!" // message to sign
       const sig = await signMessageAsync({ message: msg, account: address as Address }); 
       sendSignMsg(sig);
     }
