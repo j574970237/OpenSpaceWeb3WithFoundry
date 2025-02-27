@@ -7,7 +7,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 contract JJNFTPermit is ERC721URIStorage {
     uint256 private _counter;
     bytes32 public constant PERMIT_TYPEHASH =
-        keccak256("Permit(address owner,address spender,uint256 tokenId,uint256 nonce,uint256 deadline)");
+        keccak256("Permit(address owner,address spender,uint256 tokenId,uint256 value,uint256 nonce,uint256 deadline)");
     bytes32 public constant DOMAIN_TYPE_HASH =
         keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
     constructor() ERC721(unicode"祭杰的NFTPermit", "JJNFTP") {}

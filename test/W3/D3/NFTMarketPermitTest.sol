@@ -16,7 +16,7 @@ contract NFTMarketPermitTest is Test {
     bytes32 public constant TOEKN_PERMIT_TYPEHASH = 
         keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
     bytes32 private constant NFT_PERMIT_TYPEHASH = 
-        keccak256("Permit(address owner,address spender,uint256 tokenId,uint256 nonce,uint256 deadline)");
+        keccak256("Permit(address owner,address spender,uint256 tokenId,uint256 value,uint256 nonce,uint256 deadline)");
     bytes32 private constant MARKET_PERMIT_TYPEHASH =
         keccak256("NFTMarketPermit(address owner,address buyer,uint256 tokenId,uint256 nonce,uint256 deadline)");
     bytes32 private constant DOMAIN_TYPE_HASH =
@@ -65,6 +65,7 @@ contract NFTMarketPermitTest is Test {
 
         // 构建bob授权给NFTMarket操作token的签名
         (uint8 v3, bytes32 r3, bytes32 s3) = _getTokenPermitSignature(bob, bobKey, address(nftMarket), value, deadline);
+
 
         vm.expectEmit(true, true, true, true, address(nftMarket));
         emit NFTMarketPermit.NFTSold(tokenId, alice, bob, value);
