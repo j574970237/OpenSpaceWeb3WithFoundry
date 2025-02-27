@@ -58,21 +58,13 @@ contract NFTMarketPermitTest is Test {
         uint256 deadline = block.timestamp + 1 days;
 
         // 构建NFTMarket项目方授权给用户的购买权利签名
-        bytes32 structHash1 = keccak256(abi.encode(MARKET_PERMIT_TYPEHASH, nftMarket.getMarketOwner(), bob, tokenId, nftMarket.getNonce(), deadline));
-        bytes32 digest1 = keccak256(abi.encodePacked("\x19\x01", MARKET_DOMAIN_SEPARATOR, structHash1));
-        (uint8 v1, bytes32 r1, bytes32 s1) = vm.sign(marketOwnerKey, digest1);
+        (uint8 v1, bytes32 r1, bytes32 s1) = _getMarketPermitSignature(bob, tokenId, deadline);
 
         // 构建NFT上架permit签名
-        bytes32 structHash2 = keccak256(abi.encode(NFT_PERMIT_TYPEHASH, alice, address(nftMarket), tokenId, value, tokenId, deadline));
-        bytes32 digest2 = keccak256(abi.encodePacked("\x19\x01", NFT_DOMAIN_SEPARATOR, structHash2));
-        (uint8 v2, bytes32 r2, bytes32 s2) = vm.sign(aliceKey, digest2);
+        (uint8 v2, bytes32 r2, bytes32 s2) = _getNFTPermitSignature(alice, aliceKey, address(nftMarket), tokenId, value, deadline);
 
         // 构建bob授权给NFTMarket操作token的签名
-        uint256 nonce = token.nonces(bob);
-        bytes32 structHash3 = keccak256(abi.encode(TOEKN_PERMIT_TYPEHASH, bob, address(nftMarket), value, nonce, deadline));
-        bytes32 digest3 = keccak256(abi.encodePacked("\x19\x01", TOKEN_DOMAIN_SEPARATOR, structHash3));
-        (uint8 v3, bytes32 r3, bytes32 s3) = vm.sign(bobKey, digest3);
-
+        (uint8 v3, bytes32 r3, bytes32 s3) = _getTokenPermitSignature(bob, bobKey, address(nftMarket), value, deadline);
 
         vm.expectEmit(true, true, true, true, address(nftMarket));
         emit NFTMarketPermit.NFTSold(tokenId, alice, bob, value);
@@ -86,5 +78,50 @@ contract NFTMarketPermitTest is Test {
         assertEq(token.balanceOf(bob), 0);
         // 断言NFT的拥有者为bob
         assertEq(nft.ownerOf(tokenId), bob);
+    }
+
+    // 生成市场许可签名
+    function _getMarketPermitSignature(
+        address buyer,
+        uint256 tokenId,
+        uint256 deadline
+    ) internal view returns (uint8 v, bytes32 r, bytes32 s) {
+        bytes32 structHash = keccak256(
+            abi.encode(MARKET_PERMIT_TYPEHASH, nftMarket.getMarketOwner(), buyer, tokenId, nftMarket.getNonce(), deadline)
+        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", MARKET_DOMAIN_SEPARATOR, structHash));
+        return vm.sign(marketOwnerKey, digest);
+    }
+
+    // 生成NFT许可签名
+    function _getNFTPermitSignature(
+        address owner,
+        uint256 ownerKey,
+        address spender,
+        uint256 tokenId,
+        uint256 value,
+        uint256 deadline
+    ) internal view returns (uint8 v, bytes32 r, bytes32 s) {
+        bytes32 structHash = keccak256(
+            abi.encode(NFT_PERMIT_TYPEHASH, owner, spender, tokenId, value, tokenId, deadline)
+        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", NFT_DOMAIN_SEPARATOR, structHash));
+        return vm.sign(ownerKey, digest);
+    }
+
+    // 生成Token许可签名
+    function _getTokenPermitSignature(
+        address owner,
+        uint256 ownerKey,
+        address spender,
+        uint256 value,
+        uint256 deadline
+    ) internal view returns (uint8 v, bytes32 r, bytes32 s) {
+        uint256 nonce = token.nonces(owner);
+        bytes32 structHash = keccak256(
+            abi.encode(TOEKN_PERMIT_TYPEHASH, owner, spender, value, nonce, deadline)
+        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", TOKEN_DOMAIN_SEPARATOR, structHash));
+        return vm.sign(ownerKey, digest);
     }
 }
