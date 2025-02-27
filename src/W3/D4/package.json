@@ -1,0 +1,16 @@
+{
+	"name": "query_usdc_latest_block",
+	"version": "1.0.0",
+	"description": "查询 USDC 最近100个区块内的转账记录",
+	"main": "query_usdc_latest_block.ts",
+	"type": "module",
+	"scripts": {
+		"start": "tsx ./query_usdc_latest_block.ts"
+	},
+	"dependencies": {
+		"viem": "^2.23.5"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.3"
+	}
+}
