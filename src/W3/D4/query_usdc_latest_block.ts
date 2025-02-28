@@ -14,7 +14,7 @@ console.log('blockNumber: ', blockNumber)
 const logs = await publicClient.getLogs({
     address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC合约地址
     event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)'),
-    fromBlock: blockNumber - 100n,
+    fromBlock: blockNumber - 99n, // 因为是闭区间，所以是99
     toBlock: blockNumber
 })
 
