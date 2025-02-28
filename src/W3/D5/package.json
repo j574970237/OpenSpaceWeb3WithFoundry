@@ -1,0 +1,16 @@
+{
+	"name": "usdt_monitor",
+	"version": "1.0.0",
+	"description": "监听最新USDT转账流水和最新区块信息",
+	"main": "usdt_monitor.ts",
+	"type": "module",
+	"scripts": {
+		"start": "tsx ./usdt_monitor.ts"
+	},
+	"dependencies": {
+		"viem": "^2.23.5"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.3"
+	}
+}
