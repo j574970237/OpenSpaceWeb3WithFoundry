@@ -40,7 +40,9 @@ contract ERC20Factory {
         // 使用 call 进行转账
         (bool success, ) = projectWallet.call{value: fee}("");
         require(success, "Failed to send Ether to project wallet");
-        payable(msg.sender).transfer(remaining); // 将剩余款项返回给用户
+        // 将剩余款项返回给用户
+        (bool success2, ) = payable(msg.sender).call{value: remaining}("");
+        require(success2, "Failed to send Ether to user");
         
         token.mint(msg.sender);
         emit TokensMinted(tokenAddr, msg.sender, token.perMint());
