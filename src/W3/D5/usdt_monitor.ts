@@ -1,4 +1,4 @@
-import { createPublicClient, webSocket, parseAbiItem, getAddress } from 'viem'
+import { createPublicClient, webSocket, parseAbiItem, getAddress, formatUnits } from 'viem'
 import { mainnet } from 'viem/chains'
 
 const publicClient = createPublicClient({
@@ -47,7 +47,7 @@ const unwatchUsdtTransfer = await publicClient.watchEvent({
                 const [, from, to] = log.topics
                 const value = BigInt(log.data)
                 // 由于USDT的decimals = 6，因此需要除以10^6才能得到实际USDT的数量
-                const formattedValue = Number(value) / Math.pow(10, 6)
+                const formattedValue = formatUnits(value, 6)
                 // 去除补位的0，截取后40个字符，并添加0x前缀，以得到正确的地址
                 const fromAddress = getAddress('0x' + from.slice(-40))
                 const toAddress = getAddress('0x' + to.slice(-40))

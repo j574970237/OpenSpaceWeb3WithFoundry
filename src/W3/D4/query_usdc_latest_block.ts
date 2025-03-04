@@ -1,4 +1,4 @@
-import { createPublicClient, http, parseAbiItem } from 'viem'
+import { createPublicClient, http, parseAbiItem, formatUnits } from 'viem'
 import { mainnet } from 'viem/chains'
 
 const publicClient = createPublicClient({ 
@@ -23,7 +23,7 @@ logs.forEach(log => {
     const [, from, to] = log.topics
     const value = BigInt(log.data)
     // 由于USDC的decimals = 6，因此需要除以10^6才能得到实际USDC的数量
-    const formattedValue = Number(value) / Math.pow(10, 6)
+    const formattedValue = formatUnits(value, 6)
     const transactionHash = log.transactionHash
     console.log(`从 ${from} 转账给 ${to} ${formattedValue} USDC ,交易ID: ${transactionHash}`)
 })
