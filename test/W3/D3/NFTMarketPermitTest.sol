@@ -71,7 +71,7 @@ contract NFTMarketPermitTest is Test {
         emit NFTMarketPermit.NFTSold(tokenId, alice, bob, value);
         // 调用permitBuy方法进行购买
         vm.prank(bob);
-        nftMarket.permitBuy(alice, address(nftMarket), tokenId, value, deadline, v1, r1, s1, deadline, v2, r2, s2, deadline, v3, r3, s3);
+        nftMarket.permitBuy(alice, tokenId, value, deadline, v1, r1, s1, deadline, v2, r2, s2, deadline, v3, r3, s3);
 
         // 断言买卖双方token余额是否正确转移，且nftMarket合约中没有token持仓
         assertEq(token.balanceOf(alice), 2000000000);

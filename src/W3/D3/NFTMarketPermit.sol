@@ -119,14 +119,10 @@ contract NFTMarketPermit {
     }
 
     // 白名单用户购买NFT
-    function permitBuy(address owner, address spender, uint256 tokenId, uint256 value,
+    function permitBuy(address owner, uint256 tokenId, uint256 value,
         uint256 deadline1, uint8 v1, bytes32 r1, bytes32 s1,
         uint256 deadline2, uint8 v2, bytes32 r2, bytes32 s2,
         uint256 deadline3, uint8 v3, bytes32 r3, bytes32 s3) public {
-
-        require(owner == nft.ownerOf(tokenId), "Not the owner of NFT");
-        require(spender == address(this), "Invalid spender");
-        require(value > 0, "Value must be greater than zero");
 
         // 验证签名1，检查买家是否在白名单中
         permit(msg.sender, tokenId, deadline1, v1, r1, s1);
