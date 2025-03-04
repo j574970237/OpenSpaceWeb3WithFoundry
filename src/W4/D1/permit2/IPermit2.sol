@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+// 从uniswap的IPermit2接口中抽取需要用的结构体与方法
 interface IPermit2 {
     struct TokenPermissions {
         // ERC20 token address

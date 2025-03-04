@@ -80,6 +80,7 @@ contract TokenBankPermit2 {
         );
     }
 
+    // 为不同Token的持币人维护nonces，仅用于permit2
     function getNonceForPermit2(address token, address user) public view returns (uint256) {
         return nonces[token][user];
     }

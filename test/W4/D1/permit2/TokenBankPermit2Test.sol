@@ -23,7 +23,7 @@ contract TokenBankPermit2Test is Test {
 
     function setUp() public {
         // 设置为本地测试网
-        vm.chainId(31337);
+        vm.createSelectFork("http://127.0.0.1:8545");
         (owner, ownerKey) = makeAddrAndKey("owner");
         permit2 = IPermit2(0x90A3B384F62f43Ba07938EA43aEEc35c2aBfeCa2); // 本地测试网的permit2合约地址
         token = new JJToken();
