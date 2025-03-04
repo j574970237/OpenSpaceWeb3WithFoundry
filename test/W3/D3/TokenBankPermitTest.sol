@@ -49,7 +49,7 @@ contract TokenBankPermitTest is Test {
         emit TokenBankPermit.Deposit(alice, value);
         // 调用permitDeposit方法进行存款
         vm.prank(alice);
-        bank.permitDeposit(address(token), alice, address(bank), value, deadline, v, r, s);
+        bank.permitDeposit(address(token), alice, value, deadline, v, r, s);
 
         // 检查存款是否成功
         assertEq(bank.getBalance(address(token), alice), value);

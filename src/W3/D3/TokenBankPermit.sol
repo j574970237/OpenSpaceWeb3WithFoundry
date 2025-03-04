@@ -44,13 +44,9 @@ contract TokenBankPermit {
     }
 
     // ⽀持离线签名授权（permit）进⾏存款
-    function permitDeposit(address token, address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
-        require(block.timestamp <= deadline, "Permit expired");
-        require(spender == address(this), "Invalid spender");
-        require(value > 0, "Value must be greater than zero");
-        
+    function permitDeposit(address token, address owner, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
         // 调用permit方法进行验签与授权
-        ERC20Permit(token).permit(owner, spender, value, deadline, v, r, s);
+        ERC20Permit(token).permit(owner, address(this), value, deadline, v, r, s);
 
         // 存款
         balances[token][msg.sender] += value;
