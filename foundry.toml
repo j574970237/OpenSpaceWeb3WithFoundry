@@ -5,5 +5,12 @@ libs = ["lib"]
 via_ir = true
 optimizer = true
 optimizer-runs = 200
+ffi = true
+# 启用构建信息输出，生成包含详细编译器信息和合约源码的 build-info 文件，便于合约升级工具（例如 OpenZeppelin 的 @openzeppelin/upgrades-core）使用和验证。
+build_info = true
+# 启用存储布局的输出，帮助开发者分析合约存储变量的布局，特别是在合约升级时确保存储布局一致性，避免数据丢失。
+extra_output = ["storageLayout"]
+# 启用 Solidity 合约的抽象语法树（AST）输出，提供合约源码的结构化表示，帮助进行静态分析、代码优化和合约安全检查。
+ast = true
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
