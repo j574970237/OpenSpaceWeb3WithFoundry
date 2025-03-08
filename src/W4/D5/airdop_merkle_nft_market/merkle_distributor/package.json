@@ -1,0 +1,17 @@
+{
+  "name": "merkle_distributor",
+  "version": "1.0.0",
+  "description": "根据白名单地址与Merkle根",
+  "main": "merkle_distributor.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./merkle_distributor.ts"
+  },
+  "dependencies": {
+    "merkletreejs": "^0.5.1",
+    "viem": "^2.23.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.3"
+  }
+}
