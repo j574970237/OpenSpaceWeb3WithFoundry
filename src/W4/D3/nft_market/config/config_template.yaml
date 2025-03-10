@@ -1,0 +1,16 @@
+# 修改下列信息，并将此文件名改为config.yaml
+Database:
+  DbType: postgres  #数据库类型
+  DbName: nftmarket  #数据库名称
+  Host: 127.0.0.1 #数据库链接
+  Port: 5432 #数据库链接短裤
+  Username: your-username #用户名
+  Pwd: your-password #数据库密码
+  Sslmode: disable #ssl模式
+  TimeZone: Asia/Shanghai #时区
+
+BlockChain:
+  RpcUrl: http://127.0.0.1:8545 #节点url
+  Address: 0x...  #后端钱包地址
+  PrivateKey:  0x... #后端钱包私钥
+  ContractAddress: 0x... #NFTMarket合约地址
