@@ -16,8 +16,6 @@ contract IDOTest is Test {
     uint256 public duration; // 预售时间
 
     function setUp() public {
-        // 设置为本地测试网
-        // vm.createSelectFork("http://127.0.0.1:8545");
         targetEth = 100 * 1e18;
         limitEth = 200 * 1e18;
         price = 1e14;
