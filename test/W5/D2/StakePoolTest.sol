@@ -124,7 +124,7 @@ contract StakePoolTest is Test {
         uint256 tenDays = 10 days;
         vm.warp(time + tenDays);
         pool.claimEsToken();
-        (uint256 staked2, uint256 unCliamed2, uint256 updateTime2) = pool.infos(bob);
+        ( , uint256 unCliamed2, uint256 updateTime2) = pool.infos(bob);
         // 手动计算本次时间段获得的收益
         uint256 claimedAdd2 = amount * 10; // 10天的收益
         assertEq(unCliamed2, claimedAdd2);
