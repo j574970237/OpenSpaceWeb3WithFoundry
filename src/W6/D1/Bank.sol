@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// 已部署至Sepolia，合约地址：0x67559343687200068f421a127000bd106d220d29
-contract Bank {
+import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
+
+// 已部署至Sepolia，合约地址：0x10598bA9cb1A77957d83ec5D39F561eaF9f26107
+contract Bank is AutomationCompatibleInterface {
     mapping(address => uint256) public balanceOf;
     address public owner;
 
@@ -19,12 +21,12 @@ contract Bank {
         emit Deposit(msg.sender, msg.value);
     }
 
-    function checkUpkeep(bytes calldata) external view returns (bool upkeepNeeded) {
-        upkeepNeeded = address(this).balance >= 10 ether;
+    function checkUpkeep(bytes calldata) external view returns (bool upkeepNeeded, bytes memory /* performData */) {
+        upkeepNeeded = address(this).balance >= 10 wei;
     }
 
-    function performUpkeep(bytes calldata) external {
-        if (address(this).balance >= 10 ether) {
+    function performUpkeep(bytes calldata /* performData */) external {
+        if (address(this).balance >= 10 wei) {
             uint256 amount = address(this).balance / 2;
             payable(owner).transfer(amount);
             emit TransferOwner(amount);
