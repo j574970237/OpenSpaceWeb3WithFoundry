@@ -52,7 +52,7 @@ contract IDO is Ownable {
     function claim() external onlySuccess {
         uint256 give = totalSupply * balances[msg.sender] / totalEth;
         balances[msg.sender] = 0;
-        token.transfer(msg.sender, give);
+        require(token.transfer(msg.sender, give), "token transfer failed");
     }
 
     // 募资成功后，项目方可以提现Eth
