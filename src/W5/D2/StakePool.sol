@@ -23,7 +23,7 @@ contract StakePool is Ownable {
 
     // 初始化，将所有质押奖励代币都转至合约内部
     function initStakeSupply() external onlyOwner {
-        token.transferFrom(msg.sender, address(this), 3 * 1e6 * 1e18); // 总发行量的十分之三
+        require(token.transferFrom(msg.sender, address(this), 3 * 1e6 * 1e18), "StakePool: initStakeSupply error"); // 总发行量的十分之三
         token.approve(address(esToken), 3 * 1e6 * 1e18);
     }
 
@@ -44,7 +44,7 @@ contract StakePool is Ownable {
             info.lastUpdateTime = time;
         }
         infos[msg.sender] = info;
-        token.transferFrom(msg.sender, address(this), amount);
+        require(token.transferFrom(msg.sender, address(this), amount), "StakePool: stake transfer failed");
     }
 
     // 领取已质押的代币
@@ -59,7 +59,7 @@ contract StakePool is Ownable {
         info.unCliamed += claimedAdd;
         info.lastUpdateTime = time;
         infos[msg.sender] = info;
-        token.transfer(msg.sender, amount);
+        require(token.transfer(msg.sender, amount), "StakePool: unStake transfer failed");
     }
 
     // 领取质押挖矿奖励凭证esToken
