@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import "../../src/W6/D3/Stake.sol";
-import {RNT} from "../../src/W6/D3/RNT.sol";
+import "../../../src/W6/D3/Stake.sol";
+import {RNT} from "../../../src/W6/D3/RNT.sol";
 
 contract StakeTest is Test {
     RNT public token; // 质押奖励token
