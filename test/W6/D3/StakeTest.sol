@@ -9,15 +9,10 @@ contract StakeTest is Test {
     RNT public token; // 质押奖励token
     uint256 public constant rewardPerBlock = 1000 * 1e18;
     Stake public stake;
-    address public owner; // 项目方
 
     function setUp() public {
-        // 项目方部署各个合约
-        owner = makeAddr("Owner");
-        vm.startPrank(owner);
         token = new RNT();
         stake = new Stake(IToken(token), rewardPerBlock);
-        vm.stopPrank();
     }
 
     /**
@@ -63,7 +58,7 @@ contract StakeTest is Test {
         assertEq(address(stake).balance, 30 ether);
         assertEq(stake.balanceOf(alice), 20 ether);
         // 计算累计利率 r10 = r5 + (rewardPerBlock/totalETHBefore) * blockPast
-        uint256 r10 = r5 + (rewardPerBlock / (address(stake).balance + 10 ether) * (10 -5));
+        uint256 r10 = r5 + (rewardPerBlock / (address(stake).balance + 10 ether) * (10 - 5));
         assertEq(r10, stake.perBlockRewardRate());
 
         // 4.在区块15，bob赎回10个ETH，bob领取RNT Token收益
