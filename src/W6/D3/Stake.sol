@@ -18,6 +18,11 @@ contract Stake is IStaking {
         uint256 lastPerBlockRewardRate; // 最近一次更新时，质押1个ETH可获得的区块奖励
         uint256 lastUpdateBlock; // 最近一次更新时的区块高度
     }
+    // 事件定义
+    event UserStake(address user, uint256 amount);
+    event UserUnstake(address user, uint256 amount);
+    event UserCliamed(address user, uint256 amount);
+    event RewardRateUpdate(uint256 rewardRate, uint256 currentBlock);
 
     constructor(IToken _token, uint256 _rewardPerBlock) {
         token = _token;
@@ -55,6 +60,7 @@ contract Stake is IStaking {
             info.lastUpdateBlock = accrualBlock;
         }
         infos[msg.sender] = info;
+        emit UserStake(msg.sender, amount);
     }
 
     /**
@@ -81,6 +87,7 @@ contract Stake is IStaking {
         // 赎回ETH
         (bool success, ) = msg.sender.call{value: amount}(new bytes(0));
         require(success, "ETH transfer failed");
+        emit UserUnstake(msg.sender, amount);
     }
 
     /**
@@ -105,6 +112,7 @@ contract Stake is IStaking {
         infos[msg.sender] = info;
         // 发放奖励代币
         token.mint(msg.sender, canClaimed);
+        emit UserCliamed(msg.sender, canClaimed);
     }
 
     /**
@@ -132,9 +140,12 @@ contract Stake is IStaking {
         // 获取用户历史质押记录信息
         uint256 staked = info.staked;
         uint256 oldPerBlockRewardRate = info.lastPerBlockRewardRate;
-        // 计算用户质押这段时间的收益
-        uint256 currentPerBlockRewardRate = perBlockRewardRate + (rewardPerBlock / (address(this).balance) * (currentBlock - accrualBlock)); // 只计算不更新
-        uint256 claimedAdd = staked * (currentPerBlockRewardRate - oldPerBlockRewardRate);
+        // 计算用户质押这段时间的收益(oldUpdateBlock至accrualBlock + accrualBlock至currentBlock)
+        uint256 claimedAdd = staked * (perBlockRewardRate - oldPerBlockRewardRate);
+        if (currentBlock != accrualBlock) {
+            uint256 currentPerBlockRewardRate = perBlockRewardRate + (rewardPerBlock / (address(this).balance) * (currentBlock - accrualBlock)); // 只计算不更新
+            claimedAdd += staked * (currentPerBlockRewardRate - perBlockRewardRate);
+        }
         // 本次可提取的总收益
         return (info.unCliamed + claimedAdd);
     }
@@ -172,5 +183,6 @@ contract Stake is IStaking {
             perBlockRewardRate += rewardPerBlock / totalETH * (currentBlock - accrualBlock); // 赎回时，先调用此方法计算rate，再将ETH转给用户
         }
         accrualBlock = currentBlock;
+        emit RewardRateUpdate(perBlockRewardRate, accrualBlock);
     }
 }
