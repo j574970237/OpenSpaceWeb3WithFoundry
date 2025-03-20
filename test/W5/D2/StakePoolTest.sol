@@ -18,11 +18,10 @@ contract StakePoolTest is Test {
         vm.startPrank(owner);
         token = new JJTokenPermit();
         esToken = new esJJToken(ERC20(token));
-        pool = new StakePool(ERC20(token), esToken);
+        pool = new StakePool(esToken);
         // 项目方把总奖励量的代币转至StakePool合约
         token.approve(address(pool), 3 * 1e6 * 1e18);
         pool.initStakeSupply();
-        esToken.setWhiteList(address(pool)); // 将质押池合约设为白名单
         vm.stopPrank();
     }
 
@@ -57,11 +56,11 @@ contract StakePoolTest is Test {
         uint256 takeAmount = 50 * 1e18;
         vm.warp(time + fiveDays);
         pool.unStake(takeAmount);
-        (uint256 staked2, uint256 unCliamed2, uint256 updateTime2) = pool.infos(alice);
+        (uint256 staked2, uint256 unClaimed2, uint256 updateTime2) = pool.infos(alice);
         assertEq(staked2, amount - takeAmount);
         // 手动计算本次时间段获得的收益
         uint256 claimedAdd = amount * 5; // 5天的收益
-        assertEq(unCliamed2, claimedAdd);
+        assertEq(unClaimed2, claimedAdd);
         assertEq(updateTime2, time + fiveDays);
         // 确认alice的token余额
         assertEq(token.balanceOf(alice), takeAmount);
@@ -70,25 +69,25 @@ contract StakePoolTest is Test {
         uint256 tenDays = 10 days;
         vm.warp(time + tenDays);
         pool.claimEsToken();
-        (uint256 staked3, uint256 unCliamed3, uint256 updateTime3) = pool.infos(alice);
+        (uint256 staked3, uint256 unClaimed3, uint256 updateTime3) = pool.infos(alice);
         assertEq(staked3, amount - takeAmount);
         // 手动计算本次时间段获得的收益
         uint256 claimedAdd2 = (amount - takeAmount) * 5; // 剩余代币5天的收益
-        assertEq(unCliamed3, unCliamed2 + claimedAdd2);
+        assertEq(unClaimed3, unClaimed2 + claimedAdd2);
         assertEq(updateTime3, time + tenDays);
         // 确认alice的esToken余额
-        assertEq(esToken.balanceOf(alice), unCliamed3);
+        assertEq(esToken.balanceOf(alice), unClaimed3);
         // 确认esToken合约内token的数量
-        assertEq(token.balanceOf(address(esToken)), unCliamed3);
+        assertEq(token.balanceOf(address(esToken)), unClaimed3);
 
         // 4.alice在50天后根据奖励凭证领取代币奖励
         uint256 fiftyDays = 50 days;
         vm.warp(time + fiftyDays);
-        esToken.approve(address(pool), unCliamed3); // 奖励凭证需要销毁
+        esToken.approve(address(pool), unClaimed3); // 奖励凭证需要销毁
         pool.cliamToken(0); // 只锁仓了一次，因此这里lockId为0
         // 因为过了50天，符合锁仓后30天的要求，因此alice可以领取足额奖励
         // 确认alice的token余额，应该是之前取出的token+锁仓部分的挖矿奖励
-        assertEq(token.balanceOf(alice), takeAmount + unCliamed3);
+        assertEq(token.balanceOf(alice), takeAmount + unClaimed3);
         // 确认alice的esToken余额
         assertEq(esToken.balanceOf(alice), 0);
 
@@ -124,27 +123,27 @@ contract StakePoolTest is Test {
         uint256 tenDays = 10 days;
         vm.warp(time + tenDays);
         pool.claimEsToken();
-        ( , uint256 unCliamed2, uint256 updateTime2) = pool.infos(bob);
+        ( , uint256 unClaimed2, uint256 updateTime2) = pool.infos(bob);
         // 手动计算本次时间段获得的收益
         uint256 claimedAdd2 = amount * 10; // 10天的收益
-        assertEq(unCliamed2, claimedAdd2);
+        assertEq(unClaimed2, claimedAdd2);
         assertEq(updateTime2, time + tenDays);
         // 确认bob的esToken余额
-        assertEq(esToken.balanceOf(bob), unCliamed2);
+        assertEq(esToken.balanceOf(bob), unClaimed2);
         // 确认esToken合约内token的数量
-        assertEq(token.balanceOf(address(esToken)), unCliamed2);
+        assertEq(token.balanceOf(address(esToken)), unClaimed2);
 
         // 3.bob在20天后根据奖励凭证领取代币奖励
         uint256 twentyDays = 20 days;
         vm.warp(time + twentyDays);
-        esToken.approve(address(pool), unCliamed2); // 奖励凭证需要销毁
+        esToken.approve(address(pool), unClaimed2); // 奖励凭证需要销毁
         pool.cliamToken(0); // 只锁仓了一次，因此这里lockId为0
         // 因为过了20天，等于只锁仓了10天，因此bob只能1/3的奖励
         // 确认bob的token余额
-        uint256 cliamed = (unCliamed2) / 3;
-        assertEq(token.balanceOf(bob), cliamed);
+        uint256 claimed = (unClaimed2) / 3;
+        assertEq(token.balanceOf(bob), claimed);
         // 确认燃烧的奖励代币
-        assertEq(token.balanceOf(address(0x000000000000000000000000000000000000dEaD)), unCliamed2 - cliamed);
+        assertEq(token.balanceOf(address(0x000000000000000000000000000000000000dEaD)), unClaimed2 - claimed);
         // 确认bob的esToken余额
         assertEq(esToken.balanceOf(bob), 0);
 

@@ -9,15 +9,16 @@ contract StakePool is Ownable {
     ERC20 public immutable token; // 质押代币
     esJJToken public immutable esToken; // 挖矿奖励代币
     mapping(address => StakeInfo) public infos; // 质押者地址 -> 质押信息
+    uint256 constant ONE_DAY = 1 days;
 
     struct StakeInfo {
         uint256 staked; // 已质押的代币数量
-        uint256 unCliamed; // 可提取的挖矿奖励代币数量
+        uint256 unClaimed; // 可提取的挖矿奖励代币数量
         uint256 lastUpdateTime; // 最后一次结算挖矿奖励的时间
     }
 
-    constructor(ERC20 _token, esJJToken _esToken) Ownable(msg.sender) {
-        token = _token;
+    constructor(esJJToken _esToken) Ownable(msg.sender) {
+        token = _esToken.token();
         esToken = _esToken;
     }
 
@@ -34,13 +35,13 @@ contract StakePool is Ownable {
         if (info.staked == 0 && info.lastUpdateTime == 0) {
             // 代表用户首次质押
             info.staked = amount;
-            info.unCliamed = 0;
+            info.unClaimed = 0;
             info.lastUpdateTime = time;
         } else {
             uint256 staked = info.staked;
-            uint256 claimedAdd = staked * (time - info.lastUpdateTime) / (24 * 60 * 60); // 计算这个时间段新增的挖矿奖励
+            uint256 claimedAdd = staked * (time - info.lastUpdateTime) / ONE_DAY; // 计算这个时间段新增的挖矿奖励
             info.staked += amount;
-            info.unCliamed += claimedAdd;
+            info.unClaimed += claimedAdd;
             info.lastUpdateTime = time;
         }
         infos[msg.sender] = info;
@@ -54,9 +55,9 @@ contract StakePool is Ownable {
         uint256 time = block.timestamp;
         // 结算提取之前获得的质押奖励
         uint256 staked = info.staked;
-        uint256 claimedAdd = staked * (time - info.lastUpdateTime) / (24 * 60 * 60); // 计算这个时间段新增的挖矿奖励
+        uint256 claimedAdd = staked * (time - info.lastUpdateTime) / ONE_DAY; // 计算这个时间段新增的挖矿奖励
         info.staked -= amount;
-        info.unCliamed += claimedAdd;
+        info.unClaimed += claimedAdd;
         info.lastUpdateTime = time;
         infos[msg.sender] = info;
         require(token.transfer(msg.sender, amount), "StakePool: unStake transfer failed");
@@ -67,12 +68,12 @@ contract StakePool is Ownable {
         StakeInfo memory info = infos[msg.sender];
         uint256 time = block.timestamp;
         // 结算领取之前获得的质押奖励
-        uint256 claimedAdd = info.staked * (time - info.lastUpdateTime) / (24 * 60 * 60); // 计算这个时间段新增的挖矿奖励
-        info.unCliamed += claimedAdd;
+        uint256 claimedAdd = info.staked * (time - info.lastUpdateTime) / ONE_DAY; // 计算这个时间段新增的挖矿奖励
+        info.unClaimed += claimedAdd;
         info.lastUpdateTime = time;
         infos[msg.sender] = info;
-        require(info.unCliamed > 0, "your uncliamed token is 0");
-        esToken.mint(msg.sender, info.unCliamed);
+        require(info.unClaimed > 0, "your unclaimed token is 0");
+        esToken.mint(msg.sender, info.unClaimed);
     }
 
     // 根据用户锁仓订单号提取相应的代币奖励
