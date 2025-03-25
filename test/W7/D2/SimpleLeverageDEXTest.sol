@@ -73,6 +73,8 @@ contract SimpleLeverageDEXTest is Test {
         dex.liquidatePosition(bob);
         aliceBalance = usdc.balanceOf(alice);
         console.log("Alice USDC balance: ", aliceBalance);
+        // 目前简易的dex只考虑理想情况, 清算收益全给清算人, 因此最后Alice的余额是初始并加上了Bob最初的余额
+        assertEq(aliceBalance, 1000 * 1e18 + 500 * 1e18);
         vm.stopPrank();
     }
 }
